@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="renderer" content="webkit" />
+	<title>手机商城</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="../bootstrap3/js/holder.js"></script>
+	<link href="../bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+	<script src="../bootstrap3/jquery-1.9.1.min.js"></script>
+	<script src="../bootstrap3/js/bootstrap.js"></script>
+	<link rel="stylesheet" href="../bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="../css/top.css" />
+	<link rel="stylesheet" type="text/css" href="../css/index.css" />
+	<link rel="stylesheet" type="text/css" href="../css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="../css/login.css" />
+	<link rel="stylesheet" type="text/css" href="../css/footer.css" />
+	<script src="../bootstrap3/js/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/someFunction.js" type="text/javascript" charset="utf-8"></script>
+
+	<script type="text/javascript">
+		// 普通用户登录方法
+		function login(){
+			$("#btn-login").click(function () {
+				if ($("#username").val() == "" || $("#password").val() == ""){
+					$("#error-msg").html("请先输入登录信息")
+					return false;
+				}
+				if ($("#code").val() == ""){
+					$("#error-msg").html("验证码不能为空")
+					return false;
+				}
+				$.ajax({
+					url : "/user",
+					type: "get",
+					data: $("#form-login").serialize(),
+					dataType: "json",
+					success: function (res) {
+						if (res.status === 200){
+							alert("登录成功！");
+							window.location.href="index.html";
+							sessionStorage.setItem("user",JSON.stringify(res.data));
+						}else {
+							$("#error-msg").html(res.message)
+						}
+					},
+					error: function (error) {
+						alert(error.status + "错误,服务器出现故障，请等待攻城狮修复！！")
+					}
+				});
+			})
+		}
+
+		// 管理员登录方法
+		function adminLogin(){
+			$("#btn-admin-login").click(function () {
+				if ($("#username").val() == "" || $("#password").val() == ""){
+					$("#error-msg").html("请先输入登录信息")
+					return false;
+				}
+				if ($("#code").val() == ""){
+					$("#error-msg").html("验证码不能为空")
+					return false;
+				}
+				$.ajax({
+					url : "/user/adminLogin",
+					type: "post",
+					data: $("#form-login").serialize(),
+					dataType: "json",
+					success: function (res) {
+						if (res.status === 200){
+							alert("管理员登录成功！");
+							// 跳转到管理员后台页面（假设为admin.html）
+							window.location.href="admin.html";
+							sessionStorage.setItem("user",JSON.stringify(res.data));
+						}else {
+							$("#error-msg").html(res.message)
+						}
+					},
+					error: function (error) {
+						alert(error.status + "非管理员账户，无权限登录")
+					}
+				});
+			})
+		}
+
+		$(function () {
+			$(".footer").load("components/footer.html")
+			login();
+			adminLogin(); // 添加管理员登录功能
+
+			$("#btn-toIndex").click(function () {
+				location.href = "index.html"
+			})
+		})
+	</script>
+</head>
+<body>
+<header class="header">
+	<img src="../images/index/stumalllogo.png" alt="" />
+	<span class="pull-right"><small>欢迎访问</small><b>手机商城</b></span>
+</header>
+<div class="container mycontent text-left">
+	<div class="loginDiv" style="height: 48%;">
+		<div id="error-msg" style="color: red;font-weight:bold;padding-top: 10px" class="pull-right">
+		</div>
+		<div style="padding-top: 10px;font-size: larger;padding-left: 10px">用户登录
+		</div>
+		<form id="form-login" style="padding-top: 10px" class="form-horizontal" role="form">
+			<div class="form-group">
+				<label for="username" class="col-md-3 control-label">名字：</label>
+				<div class="col-md-8">
+					<input id="username" name="username" type="text" class="form-control" placeholder="请输入用户名">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password" class="col-md-3 control-label"> 密码：</label>
+				<div class="col-md-8">
+					<input id="password" name="password" type="password" class="form-control" placeholder="请输入密码">
+				</div>
+				<img id="img" onclick="showPasswordOrNot('password','img')" src="../images/img/open.jpeg" style="width: 20px;padding-top: 4px;">
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label"> 验证码：</label>
+				<div class="col-md-4">
+					<input id="code" name="code" type="text" style="width: 120px;height: 40px" class="form-control" placeholder="请输入验证码"/>
+				</div>
+				<img id="loginKaptcha" src="/kaptcha/kaptcha-image" onclick="reFlashImg('loginKaptcha')" style="width: 140px;height: 45px;"/>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label"></label>
+				<div class="col-md-8">
+					<input id="btn-login" class="btn btn-primary" type="button" value="用户登录" />
+					<input id="btn-admin-login" class="btn btn-primary" type="button" value="管理员登录" /> <!-- 新增管理员登录按钮 -->
+					<input id="btn-toIndex" class="btn btn-primary" type="button" value="返回主页" />
+					<span class="pull-right"><small>还没有账号？</small><a href="register.html">注册</a></span>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="footer"></div>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92cb9ad118aa32fb',t:'MTc0NDA1MDcxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

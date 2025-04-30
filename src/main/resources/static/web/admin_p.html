@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit" />
+    <title>手机商城 - 商品管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 引入 Bootstrap 和相关文件 -->
+    <script src="../bootstrap3/js/holder.js"></script>
+    <link href="../bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <script src="../bootstrap3/jquery-1.8.3.min.js"></script>
+    <script src="../bootstrap3/js/bootstrap.js"></script>
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="../bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+    <!-- 自定义 CSS -->
+    <link rel="stylesheet" type="text/css" href="../css/layout.css" />
+    <link rel="stylesheet" type="text/css" href="../css/webindex.css" />
+    <link rel="stylesheet" type="text/css" href="../css/footer.css" />
+    <link rel="stylesheet" type="text/css" href="../css/top.css" />
+    <!-- 自定义样式 -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        .container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar .nav-pills > li > a {
+            border-radius: 8px;
+            margin-bottom: 5px;
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .sidebar .nav-pills > li > a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .sidebar .nav-pills > li.active > a {
+            background-color: #007bff;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .panel {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background-color: #fff;
+            margin-bottom: 30px;
+        }
+        .panel-heading {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+            padding: 15px;
+        }
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .panel-body {
+            padding: 20px;
+        }
+        .table > tbody > tr > td {
+            vertical-align: middle;
+        }
+        .table img {
+            max-width: 50px;
+            max-height: 50px;
+            border-radius: 4px;
+        }
+        .status-active {
+            color: green;
+            font-weight: 500;
+        }
+        .status-inactive {
+            color: red;
+            font-weight: 500;
+        }
+        .status-deleted {
+            color: grey;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #0056b3, #009c8c);
+        }
+        .btn-warning, .btn-danger {
+            transition: all 0.3s ease;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .modal-content {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+        }
+        .modal-title {
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-bottom: 20px;
+            }
+            .panel {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- 头部开始 -->
+<div class="header"></div>
+<!-- 头部结束 -->
+
+<!-- 中间导航条开始 -->
+<div class="middleNavigation"></div>
+<!-- 中间导航条结束 -->
+
+<!-- 主体内容开始 -->
+<div class="container">
+    <div class="row">
+        <!-- 左侧导航栏 -->
+        <div class="col-md-2 sidebar">
+            <ul class="nav nav-pills nav-stacked">
+                <li><a href="admin.html">商品数据分析页</a></li>
+                <li class="active"><a href="admin_p.html">商品管理页</a></li>
+                <li><a href="admin_u.html">用户管理页</a></li>
+                <li><a href="admin_o.html">订单管理页</a></li>
+                <li><a href="admin_c.html">分类管理页</a></li>
+                <li><a href="admin_d.html">优惠码管理页</a></li>
+                <li><a href="admin_cmt.html">评论管理页</a></li>
+            </ul>
+        </div>
+        <!-- 右侧主内容 -->
+        <div class="col-md-10">
+            <div class="panel panel-default" style="margin-top: 20px;">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="panel-title">商品管理</p>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">
+                                <i class="fa fa-plus"></i> 新增商品
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>商品标题</th>
+                            <th>分类</th>
+                            <th>系列</th>
+                            <th>价格</th>
+                            <th>库存</th>
+                            <th>图片</th>
+                            <th>状态</th>
+                            <th>优先级</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="product-list">
+                        <!-- 动态填充商品数据 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 主体内容结束 -->
+
+<!-- 新增商品模态框 -->
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="addProductModalLabel">新增商品</h4>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="form-group">
+                        <label>商品标题</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>分类</label>
+                        <select class="form-control" name="category_id" id="add-category-select" required>
+                            <!-- 动态加载分类 -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>商品系列</label>
+                        <input type="text" class="form-control" name="item_type">
+                    </div>
+                    <div class="form-group">
+                        <label>商品卖点</label>
+                        <input type="text" class="form-control" name="sell_point">
+                    </div>
+                    <div class="form-group">
+                        <label>价格</label>
+                        <input type="number" class="form-control" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>库存数量</label>
+                        <input type="number" class="form-control" name="num" required>
+                    </div>
+                    <div class="form-group">
+                        <label>图片路径</label>
+                        <input type="text" class="form-control" name="image">
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <select class="form-control" name="status">
+                            <option value="1">上架</option>
+                            <option value="2">下架</option>
+                            <option value="3">删除</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>显示优先级</label>
+                        <input type="number" class="form-control" name="priority">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="saveProductBtn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑商品模态框 -->
+<div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="editProductModalLabel">编辑商品</h4>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm">
+                    <input type="hidden" name="id">
+                    <div class="form-group">
+                        <label>商品标题</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>分类</label>
+                        <select class="form-control" name="category_id" id="edit-category-select" required>
+                            <!-- 动态加载分类 -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>商品系列</label>
+                        <input type="text" class="form-control" name="item_type">
+                    </div>
+                    <div class="form-group">
+                        <label>商品卖点</label>
+                        <input type="text" class="form-control" name="sell_point">
+                    </div>
+                    <div class="form-group">
+                        <label>价格</label>
+                        <input type="number" class="form-control" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>库存数量</label>
+                        <input type="number" class="form-control" name="num" required>
+                    </div>
+                    <div class="form-group">
+                        <label>图片路径</label>
+                        <input type="text" class="form-control" name="image">
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <select class="form-control" name="status">
+                            <option value="1">上架</option>
+                            <option value="2">下架</option>
+                            <option value="3">删除</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>显示优先级</label>
+                        <input type="number" class="form-control" name="priority">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="updateProductBtn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 页脚开始 -->
+<div class="footer"></div>
+<!-- 页脚结束 -->
+
+<script type="text/javascript">
+    // 全局分类映射
+    let categoryMap = {};
+
+    $(function () {
+        // 加载分类和商品列表
+        loadCategories();
+        loadProducts();
+
+        // 保存新增商品
+        $('#saveProductBtn').click(function () {
+            let formData = {
+                title: $('#addProductForm input[name="title"]').val(),
+                categoryId: parseInt($('#addProductForm select[name="category_id"]').val()) || null,
+                itemType: $('#addProductForm input[name="item_type"]').val() || null,
+                sellPoint: $('#addProductForm input[name="sell_point"]').val() || null,
+                price: parseInt($('#addProductForm input[name="price"]').val()) || null,
+                num: parseInt($('#addProductForm input[name="num"]').val()) || null,
+                image: $('#addProductForm input[name="image"]').val() || null,
+                status: parseInt($('#addProductForm select[name="status"]').val()) || 1,
+                priority: parseInt($('#addProductForm input[name="priority"]').val()) || null
+            };
+            $.ajax({
+                url: '/product/add',
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status === 200) {
+                        alert('商品添加成功！');
+                        $('#addProductModal').modal('hide');
+                        $('#addProductForm')[0].reset();
+                        loadProducts();
+                    } else {
+                        alert('添加失败：' + (res.message || '未知错误'));
+                    }
+                },
+                error: function (xhr) {
+                    alert('请求错误：' + (xhr.responseText || '请检查网络'));
+                }
+            });
+        });
+
+        // 保存编辑商品
+        $('#updateProductBtn').click(function () {
+            let formData = {
+                id: parseInt($('#editProductForm input[name="id"]').val()),
+                title: $('#editProductForm input[name="title"]').val(),
+                categoryId: parseInt($('#editProductForm select[name="category_id"]').val()) || null,
+                itemType: $('#editProductForm input[name="item_type"]').val() || null,
+                sellPoint: $('#editProductForm input[name="sell_point"]').val() || null,
+                price: parseInt($('#editProductForm input[name="price"]').val()) || null,
+                num: parseInt($('#editProductForm input[name="num"]').val()) || null,
+                image: $('#editProductForm input[name="image"]').val() || null,
+                status: parseInt($('#editProductForm select[name="status"]').val()) || 1,
+                priority: parseInt($('#editProductForm input[name="priority"]').val()) || null
+            };
+            $.ajax({
+                url: '/product/update',
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status === 200) {
+                        alert('商品更新成功！');
+                        $('#editProductModal').modal('hide');
+                        loadProducts();
+                    } else {
+                        alert('更新失败：' + (res.message || '未知错误'));
+                    }
+                },
+                error: function (xhr) {
+                    alert('请求错误：' + (xhr.responseText || '请检查网络'));
+                }
+            });
+        });
+    });
+
+    // 加载分类到下拉框并存储分类映射
+    function loadCategories() {
+        $.ajax({
+            url: '/category/list',
+            type: 'get',
+            dataType: 'json',
+            success: function (res) {
+                if (res.status !== 200) {
+                    console.error('加载分类失败：' + (res.message || '未知错误'));
+                    alert('加载分类失败，请稍后重试！');
+                    return;
+                }
+                let categories = res.data || [];
+                let html = '';
+                categoryMap = {}; // 重置分类映射
+                categories.forEach(category => {
+                    html += `<option value="${category.id}">${category.name}</option>`;
+                    categoryMap[category.id] = category.name; // 存储 id 到 name 的映射
+                });
+                if (categories.length === 0) {
+                    html = '<option value="">无可用分类</option>';
+                    alert('请先在分类管理页面添加正常状态的分类！');
+                }
+                $('#add-category-select').html(html);
+                $('#edit-category-select').html(html);
+            },
+            error: function (xhr) {
+                console.error('请求错误：' + (xhr.responseText || '请检查网络'));
+                alert('加载分类失败，请稍后重试！');
+            }
+        });
+    }
+
+    // 加载所有商品
+    function loadProducts() {
+        $.ajax({
+            url: '/product/allProduct',
+            type: 'get',
+            dataType: 'json',
+            success: function (res) {
+                console.log('Product Response:', res); // 调试输出
+                if (res.status !== 200) {
+                    alert('查询失败：' + (res.message || '未知错误'));
+                    return;
+                }
+                let products = res.data || [];
+                let html = '';
+                products.forEach(product => {
+                    let statusText = product.status === 1 ? '上架' : product.status === 2 ? '下架' : '删除';
+                    let statusClass = product.status === 1 ? 'status-active' : product.status === 2 ? 'status-inactive' : 'status-deleted';
+                    // 优先使用后端的 categoryName，如果不可用则从 categoryMap 获取
+                    let categoryText = product.categoryName || categoryMap[product.categoryId] || '-';
+                    html += `
+                    <tr>
+                        <td>${product.id}</td>
+                        <td>${product.title}</td>
+                        <td>${categoryText}</td>
+                        <td>${product.itemType || '-'}</td>
+                        <td>￥${product.price || '-'}</td>
+                        <td>${product.num || '-'}</td>
+                        <td><img src="..${product.image || ''}1.jpg" alt="商品图片" onerror="this.src='/images/default.png'"></td>
+                        <td class="${statusClass}">${statusText}</td>
+                        <td>${product.priority || '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning edit-btn" data-product='${JSON.stringify(product)}'><i class="fa fa-edit"></i> 编辑</button>
+                            <button class="btn btn-sm btn-danger delete-btn" data-id="${product.id}"><i class="fa fa-trash"></i> 删除</button>
+                        </td>
+                    </tr>
+                `;
+                });
+                $('#product-list').html(html);
+
+                // 绑定编辑按钮事件
+                $('.edit-btn').click(function () {
+                    let product = JSON.parse($(this).attr('data-product'));
+                    $('#editProductForm input[name="id"]').val(product.id);
+                    $('#editProductForm input[name="title"]').val(product.title);
+                    $('#editProductForm select[name="category_id"]').val(product.categoryId);
+                    $('#editProductForm input[name="item_type"]').val(product.itemType);
+                    $('#editProductForm input[name="sell_point"]').val(product.sellPoint);
+                    $('#editProductForm input[name="price"]').val(product.price);
+                    $('#editProductForm input[name="num"]').val(product.num);
+                    $('#editProductForm input[name="image"]').val(product.image);
+                    $('#editProductForm select[name="status"]').val(product.status);
+                    $('#editProductForm input[name="priority"]').val(product.priority);
+                    $('#editProductModal').modal('show');
+                });
+
+                // 绑定删除按钮事件
+                $('.delete-btn').click(function () {
+                    let id = $(this).data('id');
+                    if (confirm('确定要删除此商品吗？')) {
+                        $.ajax({
+                            url: '/product/delete',
+                            type: 'post',
+                            data: { id: id },
+                            dataType: 'json',
+                            success: function (res) {
+                                if (res.status === 200) {
+                                    alert('删除成功！');
+                                    loadProducts();
+                                } else {
+                                    alert('删除失败：' + (res.message || '未知错误'));
+                                }
+                            },
+                            error: function (xhr) {
+                                alert('请求错误：' + (xhr.responseText || '请检查网络'));
+                            }
+                        });
+                    }
+                });
+            },
+            error: function (xhr) {
+                console.error('AJAX Error:', xhr); // 调试输出
+                alert('查询错误：' + (xhr.responseText || '请检查网络'));
+            }
+        });
+    }
+</script>
+</body>
+</html>

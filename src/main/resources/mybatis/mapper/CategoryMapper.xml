@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phonestore.mapper.CategoryMapper">
+    <!-- 自定义结果集的映射规则 -->
+    <resultMap id="queryCategory" type="category">
+        <id property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="status" column="status"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="isParent" column="is_parent"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="modifiedTime" column="modified_time"/>
+        <result property="createdUser" column="created_user"/>
+        <result property="modifiedUser" column="modified_user"/>
+    </resultMap>
+
+    <!-- 查询所有分类 -->
+    <select id="queryAllCategories" resultMap="queryCategory">
+        SELECT * FROM t_product_category
+        ORDER BY id ASC
+    </select>
+
+    <!-- 查询状态为正常的分类 -->
+    <select id="queryActiveCategories" resultMap="queryCategory">
+        SELECT id, name, status, created_time, modified_time, created_user, modified_user
+        FROM t_product_category
+        WHERE status = 1
+        ORDER BY id ASC
+    </select>
+
+
+    <!-- 根据ID查询分类 -->
+    <select id="queryCategoryById" resultMap="queryCategory">
+        SELECT * FROM t_product_category WHERE id = #{id}
+    </select>
+
+    <!-- 新增分类 -->
+    <insert id="insertCategory" parameterType="category">
+        INSERT INTO t_product_category (
+            id, parent_id, name, status, sort_order, is_parent,
+            created_time, modified_time, created_user, modified_user
+        ) VALUES (
+                     #{id}, #{parentId}, #{name}, #{status}, #{sortOrder}, #{isParent},
+                     #{createdTime}, #{modifiedTime}, #{createdUser}, #{modifiedUser}
+                 )
+    </insert>
+
+    <!-- 更新分类 -->
+    <update id="updateCategory" parameterType="category">
+        UPDATE t_product_category
+        SET
+            parent_id = #{parentId},
+            name = #{name},
+            status = #{status},
+            sort_order = #{sortOrder},
+            is_parent = #{isParent},
+            modified_time = #{modifiedTime},
+            modified_user = #{modifiedUser}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除分类 -->
+    <delete id="deleteCategory" parameterType="int">
+        DELETE FROM t_product_category WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="renderer" content="webkit" />
+	<title>手机商城</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="../bootstrap3/js/holder.js"></script>
+	<link href="../bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+	<script src="../bootstrap3/jquery-1.8.3.min.js"></script>
+	<script src="../bootstrap3/js/bootstrap.js"></script>
+	<link rel="stylesheet" href="../bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="../css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="../css/top.css" />
+	<link rel="stylesheet" type="text/css" href="../css/footer.css" />
+	<link rel="stylesheet" type="text/css" href="../css/favorites.css" />
+	<link rel="stylesheet" type="text/css" href="../css/imgmove.css" />
+	<script src="../js/imgmove.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/someFunction.js" type="text/javascript" charset="utf-8"></script>
+
+	<script type="text/javascript">
+		var pageNum = 0;
+		var pageSize = 0;
+		var prePage = 0;
+		var nextPage = 0;
+		var navigatepageNums = [];
+
+		function PaginationListSelect(num, size) {
+			showCollectProduct(num, size);
+		}
+
+		function stopCollect(fid) {
+			if (confirm("确定要取消对该商品的收藏吗？")) {
+				cancelCollect(fid);
+				location.reload();
+			}
+		}
+
+		// 修改后的加入购物车函数
+		function addCollectToCart(pid) {
+			if (confirm("确定要将此商品加入购物车吗？")) {
+				// 先获取当前价格
+				$.ajax({
+					url: `/product/${pid}`,
+					type: "get",
+					dataType: "json",
+					success: function (productRes) {
+						if (productRes.status === 200 && productRes.data && productRes.data.price) {
+							let currentPrice = productRes.data.price;
+							// 使用现价格加入购物车
+							$.ajax({
+								url: "/cart/addCart",
+								type: "post",
+								data: { pid: pid, price: currentPrice, num: 1 },
+								dataType: "json",
+								success: function (res) {
+									alert("已成功加入购物车，在购物车等您结算哟！");
+								},
+								error: function (err) {
+									alert("服务器出现错误，加入购物车失败！");
+								}
+							});
+						} else {
+							alert("无法获取商品当前价格，加入购物车失败！");
+						}
+					},
+					error: function (err) {
+						alert("服务器出现错误，获取商品价格失败！");
+					}
+				});
+			}
+		}
+
+		function addDataIntoList(res) {
+			$("#collectList").empty();
+			$("#PaginationList").empty();
+			let collectListStr = "";
+			let dataLength = res.data.list.length;
+			for (let i = 0; i < dataLength; i++) {
+				let favorite = res.data.list[i];
+				collectListStr = `<div class="col-md-3">
+                                    <div class="goods-panel">
+                                        <img src=..${favorite.image}1.jpg class="img-responsive" />
+                                        <p>收藏时价格：￥${favorite.price}.00</p>
+                                        <p id="currentPrice_${favorite.pid}">现价格：加载中...</p>
+                                        <div class="text-row-3">
+                                            <a href=product.html?pid=${favorite.pid}><small>${favorite.title}</small></a>
+                                        </div>
+                                        <span style='padding-right: 10px'>
+                                            <a href='javascript:void(0)' onclick='stopCollect(${favorite.fid})' class='btn btn-default btn-xs add-fav'><span class='fa fa-heart'></span>取消收藏</a>
+                                        </span>
+                                        <span style='padding-right: 10px'>
+                                            <a href='javascript:void(0)' onclick='addCollectToCart(${favorite.pid})' class="btn btn-default btn-xs add-cart"><span class="fa fa-cart-arrow-down"></span>加入购物车</a>
+                                        </span>
+                                    </div>
+                                </div>`;
+				$("#collectList").append(collectListStr);
+
+				$.ajax({
+					url: `/product/${favorite.pid}`,
+					type: "get",
+					dataType: "json",
+					success: function (productRes) {
+						if (productRes.status === 200 && productRes.data) {
+							$(`#currentPrice_${favorite.pid}`).html(`现价格：￥${productRes.data.price}.00`);
+						} else {
+							$(`#currentPrice_${favorite.pid}`).html(`现价格：无法获取`);
+						}
+					},
+					error: function (err) {
+						$(`#currentPrice_${favorite.pid}`).html(`现价格：获取失败`);
+					}
+				});
+				classFunction();
+			}
+
+			pageNum = res.data.pageNum;
+			pageSize = res.data.pageSize;
+			prePage = res.data.prePage;
+			nextPage = res.data.nextPage;
+			navigatepageNums = res.data.navigatepageNums;
+
+			let firstPage = `<a id='first' href='#' onclick='PaginationListSelect(${prePage},${pageSize})' style='padding-right: 8px'>上一页</a>`;
+			let lastPage = `<a id='end' href='javascript:void(0)' onclick='PaginationListSelect(${nextPage},${pageSize})' style='padding-right: 8px'>下一页</a>`;
+			let PaginationListStr = "";
+			if (res.data.isFirstPage) {
+				firstPage = `<a id='first' href='javascript:void(0)' style='opacity: 0.2;padding-right: 8px;color: black'>上一页</a>`;
+				PaginationListStr += firstPage;
+			} else {
+				PaginationListStr += firstPage;
+			}
+			for (let i = 0; i < navigatepageNums.length; i++) {
+				let nowNum = navigatepageNums[i];
+				if (nowNum === pageNum) {
+					PaginationListStr += `<a href='javascript:void(0)' style='padding-right: 8px;color: black' disabled='disabled'>【${nowNum}】</a>`;
+				} else {
+					PaginationListStr += `<a href='javascript:void(0)' onclick='PaginationListSelect(${nowNum},${pageSize})' style='padding-right: 8px'>${nowNum}</a>`;
+				}
+			}
+			if (!res.data.isLastPage) {
+				PaginationListStr += lastPage;
+			} else {
+				lastPage = `<a id='end' href='javascript:void(0)' style='opacity: 0.2;padding-right: 8px;color: black'>下一页</a>`;
+				PaginationListStr += lastPage;
+			}
+			$("#PaginationList").append(PaginationListStr);
+		}
+
+		function showCollectProduct(num, size) {
+			let status = 1;
+			$.ajax({
+				url: "/favorites/queryFavorites",
+				type: "get",
+				data: "status=" + status + "&pageNum=" + num + "&pageSize=" + size,
+				dataType: "json",
+				success: function (res) {
+					if (res.data.list.length !== 0) {
+						addDataIntoList(res);
+					} else {
+						$("#resultText").empty().html("暂无收藏商品，先去逛逛吧！");
+					}
+				},
+				error: function (err) {
+					alert("服务器出现错误，查询收藏商品失败！");
+				}
+			});
+		}
+
+		$(function () {
+			$(".header").load("components/head.html");
+			$(".footer").load("components/footer.html");
+			$(".middleNavigation").load("components/middleNavigationBar.html");
+			showCollectProduct(1, 4);
+		});
+	</script>
+</head>
+<body>
+<div class="header"></div>
+<div class="middleNavigation"></div>
+<div class="col-md-offset-2" style="padding-bottom: 20px;">
+	<h5 id="resultText" style="font-weight: bolder;color: red">以下是你的收藏商品：</h5>
+</div>
+<div class="container">
+	<div id="collectList" class="col-md-offset-1 col-md-10"></div>
+	<div class="col-md-offset-1 col-md-10">
+		<p id="PaginationList" align="center"></p>
+	</div>
+</div>
+<div class="clearfix"></div>
+<div class="footer"></div>
+</body>
+</html>

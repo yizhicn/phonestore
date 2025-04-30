@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="renderer" content="webkit" />
+	<title>手机商城</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="../bootstrap3/js/holder.js"></script>
+	<link href="../bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+	<script src="../bootstrap3/jquery-1.9.1.min.js"></script>
+	<script src="../bootstrap3/js/bootstrap.js"></script>
+	<link rel="stylesheet" href="../bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="../css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="../css/top.css" />
+	<link rel="stylesheet" type="text/css" href="../css/footer.css" />
+	<link rel="stylesheet" type="text/css" href="../css/orderConfirm.css" />
+	<script src="../js/herf.js" type="text/javascript" charset="UTF-8"></script>
+
+	<script type="text/javascript">
+		let discountData = null; // 存储验证后的优惠码数据
+		let originalPrice = 0; // 存储原始订单价格
+
+		function getOrderByOid(oid) {
+			$.ajax({
+				url: "/order/queryOrder",
+				type: "get",
+				data: "oid=" + oid,
+				dataType: "json",
+				success: function (res) {
+					if (res.status === 200) {
+						let order = res.data;
+						$("#orderId").html(order.oid);
+						$("#orderPrice").html(order.totalPrice);
+						$("#rightPrice").html("¥" + order.totalPrice + " ");
+						$("#oid").val(order.oid);
+						$("#totalPrice").val(order.totalPrice);
+						originalPrice = parseInt(order.totalPrice); // 保存原始价格
+					} else if (res.status === 3000) {
+						location.href = "500.html";
+					}
+				},
+				error: function (error) {
+					if (error.status === 400) {
+						location.href = "500.html";
+					} else {
+						alert("服务器出现故障，请等待攻城狮修复！！");
+					}
+				}
+			});
+		}
+
+		function verifyDiscount() {
+			let discountCode = $("#discountCode").val();
+			if (!discountCode) {
+				alert("请输入优惠码！");
+				return;
+			}
+			$.ajax({
+				url: "/discount/queryByName",
+				type: "get",
+				data: { name: discountCode },
+				dataType: "json",
+				success: function (res) {
+					if (res.status === 200) {
+						discountData = res.data;
+						let modeText = discountData.mode === 0 ? "固定金额" : "百分比";
+						let detailText = discountData.mode === 0 ? `满${discountData.minAmount}减${discountData.discountAmount}` : `${discountData.discountPercentage}%`;
+						let expiryDate = new Date(discountData.expiryDate).toLocaleString('zh-CN', {
+							year: 'numeric',
+							month: '2-digit',
+							day: '2-digit',
+							hour: '2-digit',
+							minute: '2-digit'
+						});
+						$("#discountDetails").html(`
+                            <p><strong>优惠码:</strong> ${discountData.name}</p>
+                            <p><strong>类型:</strong> ${modeText}</p>
+                            <p><strong>详情:</strong> ${detailText}</p>
+                            <p><strong>到期时间:</strong> ${expiryDate}</p>
+                        `).show();
+						$("#applyDiscountBtn").prop("disabled", false);
+						alert("优惠码验证成功！");
+					}
+				},
+				error: function (xhr) {
+					$("#discountDetails").hide();
+					discountData = null;
+					$("#applyDiscountBtn").prop("disabled", true);
+					alert(xhr.responseJSON.message || "优惠码不存在，请检查后重试！");
+				}
+			});
+		}
+
+		function applyDiscount() {
+			if (!discountData) {
+				alert("请先验证优惠码！");
+				return;
+			}
+			// 验证优惠码有效性并减少数量
+			$.ajax({
+				url: "/discount/verify",
+				type: "post",
+				data: { name: discountData.name, orderAmount: originalPrice },
+				dataType: "json",
+				success: function (verifyRes) {
+					if (verifyRes.status === 200) {
+						// 计算新价格
+						let newPrice = discountData.mode === 0
+								? originalPrice - discountData.discountAmount
+								: Math.round(originalPrice * (1 - discountData.discountPercentage / 100));
+						if (newPrice < 0) newPrice = 0;
+
+						// 更新订单价格
+						$.ajax({
+							url: "/order/updatePrice",
+							type: "post",
+							data: { oid: $("#oid").val(), price: newPrice },
+							dataType: "json",
+							success: function (res) {
+								if (res.status === 200) {
+									$("#orderPrice").html(newPrice);
+									$("#rightPrice").html("¥" + newPrice + " ");
+									$("#totalPrice").val(newPrice);
+									discountData.quantity -= 1; // 更新前端显示的剩余数量
+									$("#discountDetails p:last").html(`<strong>剩余数量:</strong> ${discountData.quantity}`);
+									$("#applyDiscountBtn").prop("disabled", true); // 防止重复应用
+									alert("优惠码应用成功！新订单价格为 ¥" + newPrice);
+								}
+							},
+							error: function (xhr) {
+								alert(xhr.responseJSON.message || "更新订单价格失败，请稍后重试！");
+							}
+						});
+					}
+				},
+				error: function (xhr) {
+					alert(xhr.responseJSON.message || "优惠码无效，请检查后重试！");
+				}
+			});
+		}
+
+		function cancelOrder(oid) {
+			if (confirm("确定要取消该订单码？")) {
+				$.ajax({
+					url: "/order/updateStatus",
+					type: "post",
+					data: { oid: oid, status: -1 },
+					success: function (res) {
+						alert("取消订单成功");
+						location.href = "orders.html";
+					}
+				});
+			}
+		}
+
+		$(function () {
+			$(".header").load("components/head.html");
+			$(".footer").load("components/footer.html");
+			$(".middleNavigation").load("components/middleNavigationBar.html");
+
+			let oid = getPidFromLastHtml();
+			getOrderByOid(oid);
+
+			$("#discountDetails").hide();
+			$("#applyDiscountBtn").prop("disabled", true); // 初始禁用“使用”按钮
+		});
+	</script>
+</head>
+<body>
+<div class="header"></div>
+<div class="middleNavigation"></div>
+<div class="container">
+	<div class="col-md-offset-1 col-md-10">
+		<div class="col-md-4">
+			<div class="col-md-12 order-bar-undo">
+				1.确认订单信息
+				<span class="pull-right"><span class="fa fa-chevron-right"></span></span>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="col-md-12 order-bar-active">
+				2.在线支付
+				<span class="pull-right"><span class="fa fa-chevron-right"></span></span>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="col-md-12 order-bar-undo">
+				3.付款成功
+			</div>
+		</div>
+		<div style="padding-top: 15px;padding-bottom: 15px"></div>
+		<div class="col-md-12" style="padding-top: 20px">
+			<form role="form" action="/alipay/pay">
+				<input id="oid" type="hidden" name="oid" value="">
+				<input id="totalPrice" type="hidden" name="totalPrice" value="">
+				<div>订单号：<span id="orderId" style="color: red;font-weight: bold"></span> ，
+					支付金额¥ <span id="orderPrice" style="color: red;font-weight: bold"></span> ，收款方xx手机商城</div>
+				<div class="form-group" style="padding-top: 20px">
+					<label for="discountCode">优惠码</label>
+					<div class="input-group">
+						<input type="text" class="form-control" id="discountCode" placeholder="请输入优惠码">
+						<span class="input-group-btn">
+                                <button class="btn btn-primary" type="button" onclick="verifyDiscount()">验证</button>
+                                <button class="btn btn-success" type="button" id="applyDiscountBtn" onclick="applyDiscount()">使用</button>
+                            </span>
+					</div>
+				</div>
+				<div id="discountDetails" style="padding: 15px; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px;"></div>
+				<div class="pay-bar" style="padding-top: 30px">
+					<a href="cart.html" style="padding: 0 15px">返回购物车</a>
+					<a href="javascript:void(0)" onclick="return cancelOrder($('#oid').val())">取消支付</a>
+					<span class="pull-right">
+                            <span id="rightPrice" style="color: red;font-weight: bold"></span>
+                            <input type="submit" value="确认付款" class="btn btn-primary btn-lg link-success"/>
+                        </span>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="clearfix"></div>
+<div class="footer"></div>
+</body>
+</html>

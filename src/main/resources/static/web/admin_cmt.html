@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit" />
+    <title>手机商城 - 评论管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 引入 Bootstrap 和相关文件 -->
+    <script src="../bootstrap3/js/holder.js"></script>
+    <link href="../bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <script src="../bootstrap3/jquery-1.8.3.min.js"></script>
+    <script src="../bootstrap3/js/bootstrap.js"></script>
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="../bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+    <!-- 自定义 CSS -->
+    <link rel="stylesheet" type="text/css" href="../css/layout.css" />
+    <link rel="stylesheet" type="text/css" href="../css/webindex.css" />
+    <link rel="stylesheet" type="text/css" href="../css/footer.css" />
+    <link rel="stylesheet" type="text/css" href="../css/top.css" />
+    <!-- 自定义样式 -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) no-repeat fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar .nav-pills > li > a {
+            border-radius: 8px;
+            margin-bottom: 5px;
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .sidebar .nav-pills > li > a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .sidebar .nav-pills > li.active > a {
+            background-color: #007bff;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .panel {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background-color: #fff;
+            margin-bottom: 30px;
+        }
+        .panel-heading {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+            padding: 15px;
+        }
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .panel-body {
+            padding: 20px;
+        }
+        .table {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+        .table td {
+            vertical-align: middle;
+        }
+        .table tr:hover {
+            background-color: #e9ecef;
+        }
+        .table a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .table a:hover {
+            text-decoration: underline;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-delete:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-bottom: 20px;
+            }
+            .panel {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- 头部开始 -->
+<div class="header"></div>
+<!-- 头部结束 -->
+
+<!-- 中间导航条开始 -->
+<div class="middleNavigation"></div>
+<!-- 中间导航条结束 -->
+
+<!-- 主体内容开始 -->
+<div class="container">
+    <div class="row">
+        <!-- 左侧导航栏 -->
+        <div class="col-md-2 sidebar">
+            <ul class="nav nav-pills nav-stacked">
+                <li><a href="admin.html">商品数据分析页</a></li>
+                <li><a href="admin_p.html">商品管理页</a></li>
+                <li><a href="admin_u.html">用户管理页</a></li>
+                <li><a href="admin_o.html">订单管理页</a></li>
+                <li><a href="admin_c.html">分类管理页</a></li>
+                <li><a href="admin_d.html">优惠码管理页</a></li>
+                <li class="active"><a href="admin_cmt.html">评论管理页</a></li>
+            </ul>
+        </div>
+        <!-- 右侧主内容 -->
+        <div class="col-md-10">
+            <div class="panel panel-default" style="margin-top: 20px;">
+                <div class="panel-heading">
+                    <p class="panel-title">评论管理</p>
+                </div>
+                <div class="panel-body">
+                    <!-- 评论表格 -->
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>评论ID</th>
+                            <th>订单ID</th>
+                            <th>商品ID</th>
+                            <th>用户名</th>
+                            <th>评分</th>
+                            <th>评论内容</th>
+                            <th>评论时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="commentTableBody">
+                        <!-- 动态填充评论数据 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 主体内容结束 -->
+
+<!-- 页脚开始 -->
+<div class="footer"></div>
+<!-- 页脚结束 -->
+
+<script type="text/javascript">
+    $(function () {
+        // 加载评论数据
+        loadComments();
+    });
+
+    // 加载评论数据
+    function loadComments() {
+        $.ajax({
+            url: "/comment/all",
+            type: "get",
+            dataType: "json",
+            success: function (res) {
+                let comments = res.data;
+                let tableHtml = '';
+                comments.forEach(comment => {
+                    tableHtml += `
+                        <tr>
+                            <td>${comment.id}</td>
+                            <td>${comment.oid}</td>
+                            <td>${comment.pid}</td>
+                            <td>${comment.createdUser}</td>
+                            <td>${comment.rating}</td>
+                            <td>${comment.content}</td>
+                            <td>${formatDate(comment.createdTime)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-delete" onclick="deleteComment(${comment.id})">删除</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                $('#commentTableBody').html(tableHtml);
+            },
+            error: function () {
+                alert("查询评论失败，请稍后重试！");
+            }
+        });
+    }
+
+    // 删除评论
+    function deleteComment(id) {
+        if (confirm("确认删除评论 " + id + "？")) {
+            $.ajax({
+                url: "/comment/delete/" + id,
+                type: "delete",
+                dataType: "json",
+                success: function (res) {
+                    if (res.status === 200) {
+                        alert("评论已删除！");
+                        loadComments(); // 刷新评论列表
+                    } else {
+                        alert("删除评论失败！");
+                    }
+                },
+                error: function () {
+                    alert("删除评论失败，请稍后重试！");
+                }
+            });
+        }
+    }
+
+    // 格式化日期
+    function formatDate(dateStr) {
+        let date = new Date(dateStr);
+        return date.toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+</script>
+</body>
+</html>

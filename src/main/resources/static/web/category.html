@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="renderer" content="webkit" />
+        <title>手机商城</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="../bootstrap3/js/holder.js"></script>
+        <link href="../bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+        <script src="../bootstrap3/jquery-1.8.3.min.js"></script>
+        <script src="../bootstrap3/js/bootstrap.js"></script>
+        <link rel="stylesheet" href="../bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+        <link rel="stylesheet" type="text/css" href="../css/layout.css" />
+        <link rel="stylesheet" type="text/css" href="../css/top.css" />
+        <link rel="stylesheet" type="text/css" href="../css/footer.css" />
+        <link rel="stylesheet" type="text/css" href="../css/search.css" />
+        <link rel="stylesheet" type="text/css" href="../css/imgmove.css" />
+        <script src="../js/imgmove.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../js/someFunction.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../js/herf.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript">
+            // 从 URL 获取分类 ID 和页数
+            var categoryId = getUrlParam("categoryId");
+            var pageNum = getUrlParam("pageNum") || 1; // 默认第一页
+
+            // 分页全局参数
+            var pageSize = 12; // 每页显示数量，可调整
+            var prePage = 0;
+            var nextPage = 0;
+            var navigatepageNums = [];
+
+            //记录商品收藏状态和收藏后返回的收藏的fid
+            var status = 0; //0未收藏，1已收藏
+            var fid = 0;
+
+            // 根据分类查询商品
+            function queryByCategory(pageNum, pageSize, categoryId) {
+                $.ajax({
+                    url: "/product/category/" + pageNum + "/" + pageSize + "/" + categoryId,
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.data.list.length !== 0) {
+                            $("#categoryText").html("当前分类的商品：");
+                            addData(res);
+                        } else {
+                            $("#categoryText").html("暂无该分类下的商品！");
+                            $("#productList").empty();
+                            $("#PaginationList").empty();
+                        }
+                    },
+                    error: function (err) {
+                        alert("服务器错误，请稍后重试！");
+                    }
+                });
+            }
+
+            //加入收藏
+            function addToCollect(id,num) {
+                //判断是否登录
+                if (sessionStorage.getItem("user") == null){
+                    alert("您尚未登录，请先登录！")
+                    location.href = "login.html"
+                    return false;
+                }
+                if (status === '0') {
+                    if (confirm("确定要加入收藏吗？")) {
+                        $.ajax({
+                            url: "/favorites/addFavorites",
+                            type: "post",
+                            data: {pid: id},
+                            dataType: "json",
+                            success: function (res) {
+                                alert("收藏成功！")
+                                //收藏爱心变化、收藏状态置为1，保存返回的fid
+                                status = '1';
+                                fid = res.data;
+                                $("#product" + num).html("<span class='fa fa-heart'></span>取消收藏");
+                            },
+                            error: function (err) {
+                                alert("服务器出现错误，加入购物车失败！")
+                            }
+                        })
+                    }
+                }else if (status === '1'){
+                    if (confirm("确定要取消收藏吗？")){
+                        //取消商品收藏的方法
+                        cancelCollect(fid);
+                        //收藏爱心变化并将收藏状态置为0
+                        status = '0'
+                        $("#product"+num).html("<span class='fa fa-heart-o'></span>加入收藏");
+                    }
+                }
+            }
+
+            //加入购物车
+            function addToCart(pid,price){
+                //判断是否登录
+                if (sessionStorage.getItem("user") == null){
+                    alert("您尚未登录，请先登录！")
+                    location.href = "login.html"
+                    return false;
+                }
+                if (confirm("确定要将此商品加入购物车吗？")){
+                    $.ajax({
+                        url: "/cart/addCart",
+                        type: "post",
+                        data: {pid:pid,price:price,num:1},
+                        dataType: "json",
+                        success: function (res) {
+                            if (res.status === 200){
+                                alert("已成功加入购物车，在购物车等您结算哟！")
+                            }
+                        },
+                        error : function (err) {
+                            alert("服务器出现错误，加入购物车失败！")
+                        }
+                    })
+                }
+            }
+
+            // 填充商品数据
+            function addData(res) {
+                $("#productList").empty();
+                $("#PaginationList").empty();
+                let productListStr = "";
+                let dataLength = res.data.list.length;
+                for (let i = 0; i < dataLength; i++) {
+                    let product = res.data.list[i];
+                    productListStr = "<div class=\"col-md-3\">"
+                        + "<div class=\"goods-panel\">"
+                        + "<img src=.." + product.image + "1.jpg" + " class=\"img-responsive\" />"
+                        + "<p>￥" + product.price + ".00</p>"
+                        + "<div class=\"text-row-3\">"
+                        + "<a href=product.html?pid=" + product.id + "><small>" + product.title + "</small></a></div>"
+                        + "<span style='padding-right: 10px'>"
+                        + "<a href='javascript:void(0)' onclick='addToCollect(#{id},#{num})' id='product#{num}' class='btn btn-default btn-xs add-fav'><span class='fa fa-heart-o'></span>加入收藏</a>"
+                        + "</span>"
+                        + "<span style='padding-right: 10px'>"
+                        + "<a href='javascript:void(0)' onclick='addToCart(#{id},#{price})' class=\"btn btn-default btn-xs add-cart\"><span class=\"fa fa-cart-arrow-down\"></span>加入购物车</a>"
+                        + "</span></div></div>";
+                    productListStr = productListStr.replaceAll("#{id}", product.id)
+                        .replaceAll("#{price}", product.price)
+                        .replaceAll("#{num}", product.id);
+                    $("#productList").append(productListStr);
+                    classFunction();
+                }
+                addPaginationData(res);
+            }
+
+            // 填充分页条
+            function addPaginationData(res) {
+                pageNum = res.data.pageNum;
+                pageSize = res.data.pageSize;
+                prePage = res.data.prePage;
+                nextPage = res.data.nextPage;
+                navigatepageNums = res.data.navigatepageNums;
+
+                let firstPage = "<a id='first' href='#' onclick='PaginationListSelect(" + prePage + "," + pageSize + ")' style='padding-right: 8px'>上一页</a>";
+                let lastPage = "<a id='end' href='javascript:void(0)' onclick='PaginationListSelect(" + nextPage + "," + pageSize + ")' style='padding-right: 8px'>下一页</a>";
+                let PaginationListStr = "";
+                if (res.data.isFirstPage) {
+                    firstPage = "<a id='first' href='javascript:void(0)' style='opacity: 0.2;padding-right: 8px;color: black'>上一页</a>";
+                    PaginationListStr += firstPage;
+                } else {
+                    PaginationListStr += firstPage;
+                }
+                for (let i = 0; i < navigatepageNums.length; i++) {
+                    let nowNum = navigatepageNums[i];
+                    if (nowNum === pageNum) {
+                        PaginationListStr += "<a href='javascript:void(0)' style='padding-right: 8px;color: black' disabled='disabled'>【" + nowNum + "】</a>";
+                    } else {
+                        PaginationListStr += "<a href='javascript:void(0)' onclick='PaginationListSelect(" + nowNum + "," + pageSize + ")' style='padding-right: 8px'>" + nowNum + "</a>";
+                    }
+                }
+                if (!res.data.isLastPage) {
+                    PaginationListStr += lastPage;
+                } else {
+                    lastPage = "<a id='end' href='javascript:void(0)' style='opacity: 0.2;padding-right: 8px;color: black'>下一页</a>";
+                    PaginationListStr += lastPage;
+                }
+                $("#PaginationList").append(PaginationListStr);
+            }
+
+            // 分页选择
+            function PaginationListSelect(num, size) {
+                location.href = "/web/category.html?categoryId=" + categoryId + "&pageNum=" + num + "&pageSize=" + size;
+            }
+
+            // 页面加载时执行
+            $(function () {
+                $(".header").load("./components/head.html");
+                $(".footer").load("./components/footer.html");
+                $(".middleNavigation").load("./components/middleNavigationBar.html");
+                queryByCategory(pageNum, pageSize, categoryId);
+            });
+        </script>
+    </head>
+    <body>
+    <div class="header"></div>
+    <div class="middleNavigation"></div>
+    <div class="col-md-offset-2" style="padding-bottom: 20px;">
+        <div style="font-weight: bolder;color: red;font-size: larger">
+            <span id="categoryText" style="color: black;font-size: smaller"></span>
+        </div>
+    </div>
+    <div class="container">
+        <div id="productList" class="col-md-offset-1 col-md-10"></div>
+        <div class="col-md-offset-1 col-md-10">
+            <p id="PaginationList" align="center"></p>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="footer"></div>
+    </body>
+</html>

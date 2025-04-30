@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phonestore.mapper.DiscountMapper">
+    <!-- ResultMap for Discount entity -->
+    <resultMap id="queryDiscount" type="phonestore.entity.Discount">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="expiryDate" column="expiry_date"/>
+        <result property="mode" column="mode"/>
+        <result property="minAmount" column="min_amount"/>
+        <result property="discountAmount" column="discount_amount"/>
+        <result property="discountPercentage" column="discount_percentage"/>
+        <result property="createdUser" column="created_user"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="modifiedUser" column="modified_user"/>
+        <result property="modifiedTime" column="modified_time"/>
+    </resultMap>
+
+    <!-- Insert a discount -->
+    <insert id="insertDiscount" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_discount (
+            name, quantity, expiry_date, mode, min_amount, discount_amount, discount_percentage,
+            created_user, created_time, modified_user, modified_time
+        ) VALUES (
+                     #{name}, #{quantity}, #{expiryDate}, #{mode}, #{minAmount}, #{discountAmount}, #{discountPercentage},
+                     #{createdUser}, #{createdTime}, #{modifiedUser}, #{modifiedTime}
+                 )
+    </insert>
+
+    <!-- Update a discount -->
+    <update id="updateDiscount">
+        UPDATE t_discount SET
+                              name = #{name},
+                              quantity = #{quantity},
+                              expiry_date = #{expiryDate},
+                              mode = #{mode},
+                              min_amount = #{minAmount},
+                              discount_amount = #{discountAmount},
+                              discount_percentage = #{discountPercentage},
+                              modified_user = #{modifiedUser},
+                              modified_time = #{modifiedTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- Delete a discount by ID -->
+    <delete id="deleteDiscountById">
+        DELETE FROM t_discount WHERE id = #{id}
+    </delete>
+
+    <!-- Query a discount by ID -->
+    <select id="queryDiscountById" resultMap="queryDiscount">
+        SELECT * FROM t_discount WHERE id = #{id}
+    </select>
+
+    <!-- Query a discount by name -->
+    <select id="queryDiscountByName" resultMap="queryDiscount">
+        SELECT * FROM t_discount WHERE name = #{name}
+    </select>
+
+    <!-- Query all discounts -->
+    <select id="queryAllDiscounts" resultMap="queryDiscount">
+        SELECT * FROM t_discount ORDER BY created_time DESC
+    </select>
+
+    <!-- Decrease quantity by 1 (for verification) -->
+    <update id="decreaseQuantity">
+        UPDATE t_discount SET quantity = quantity - 1
+        WHERE id = #{id} AND quantity > 0
+    </update>
+</mapper>

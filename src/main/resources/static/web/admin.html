@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit" />
+    <title>手机商城 - 管理员后台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 引入 Bootstrap 和相关文件 -->
+    <script src="../bootstrap3/js/holder.js"></script>
+    <link href="../bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <script src="../bootstrap3/jquery-1.8.3.min.js"></script>
+    <script src="../bootstrap3/js/bootstrap.js"></script>
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="../bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+    <!-- 自定义 CSS -->
+    <link rel="stylesheet" type="text/css" href="../css/layout.css" />
+    <link rel="stylesheet" type="text/css" href="../css/webindex.css" />
+    <link rel="stylesheet" type="text/css" href="../css/footer.css" />
+    <link rel="stylesheet" type="text/css" href="../css/top.css" />
+    <!-- 引入 Chart.js 用于绘制饼图和条状图 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 自定义样式 -->
+    <style>
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) no-repeat fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            min-height: calc(100vh - 200px); /* 确保容器高度适应视口 */
+        }
+        /* 导航栏样式 */
+        .sidebar {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar .nav-pills > li > a {
+            border-radius: 8px;
+            margin-bottom: 5px;
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .sidebar .nav-pills > li > a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .sidebar .nav-pills > li.active > a {
+            background-color: #007bff;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        /* 面板样式 */
+        .panel {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background-color: #fff;
+            margin-bottom: 30px;
+        }
+        .panel-heading {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+            padding: 15px;
+        }
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .panel-body {
+            padding: 20px;
+        }
+        .table > tbody > tr > td {
+            vertical-align: middle;
+        }
+        .status-active {
+            color: green;
+            font-weight: 500;
+        }
+        .status-inactive {
+            color: red;
+            font-weight: 500;
+        }
+        .status-deleted {
+            color: grey;
+            font-weight: 500;
+        }
+        /* 按钮样式 */
+        .btn-primary {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #0056b3, #009c8c);
+        }
+        .btn-warning, .btn-danger {
+            transition: all 0.3s ease;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        /* 模态框样式 */
+        .modal-content {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+        }
+        .modal-title {
+            font-weight: 600;
+        }
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-bottom: 20px;
+            }
+            .panel {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- 头部开始 -->
+<div class="header"></div>
+<!-- 头部结束 -->
+
+<!-- 中间导航条开始 -->
+<div class="middleNavigation"></div>
+<!-- 中间导航条结束 -->
+
+<!-- 主体内容开始 -->
+<div class="container">
+    <div class="row">
+        <!-- 左侧导航栏 -->
+        <div class="col-md-2 sidebar">
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active"><a href="admin.html">商品数据分析页</a></li>
+                <li><a href="admin_p.html">商品管理页</a></li>
+                <li><a href="admin_u.html">用户管理页</a></li>
+                <li><a href="admin_o.html">订单管理页</a></li>
+                <li><a href="admin_c.html">分类管理页</a></li>
+                <li><a href="admin_d.html">优惠码管理页</a></li>
+                <li><a href="admin_cmt.html">评论管理页</a></li>
+            </ul>
+        </div>
+        <!-- 右侧主内容 -->
+        <div class="col-md-10">
+            <div class="panel panel-default" style="margin-top: 20px;">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <p class="panel-title">近七日订单成交金额</p>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <canvas id="orderAmountChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-heading">
+                    <p class="panel-title">热销商品统计</p>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <!-- 左侧饼图 -->
+                        <div class="col-md-6">
+                            <canvas id="hotProductsChart"></canvas>
+                        </div>
+                        <!-- 右侧商品名称列表 -->
+                        <div class="col-md-6 product-list">
+                            <h4>热销商品排行</h4>
+                            <ul class="list-group" id="hot-products-list">
+                                <!-- 动态填充商品名称 -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- 主体内容结束 -->
+
+<!-- 页脚开始 -->
+<div class="footer"></div>
+<!-- 页脚结束 -->
+
+<script type="text/javascript">
+    $(function () {
+        // 获取热销商品数据并绘制饼图和商品列表
+        showHotProductsChart();
+        // 获取近七日订单金额数据并绘制条状图
+        showOrderAmountChart();
+    });
+
+    // 查询热销商品并绘制饼图及商品列表
+    function showHotProductsChart() {
+        $.ajax({
+            url: "/product/hotProduct",
+            type: "get",
+            dataType: "json",
+            success: function (res) {
+                // 限制为前五条数据
+                let topProducts = res.data.slice(0, 5);
+                // 提取商品标题和热度数据
+                let labels = topProducts.map(product => product.title);
+                let data = topProducts.map(product => product.priority);
+                // 定义颜色数组
+                let colors = [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
+                ];
+
+                // 绘制饼图
+                let ctx = document.getElementById('hotProductsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '商品热度',
+                            data: data,
+                            backgroundColor: colors,
+                            borderColor: colors.map(color => color.replace('0.7', '1')),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '热销商品热度分布',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // 填充商品名称列表
+                let listHtml = '';
+                topProducts.forEach((product, index) => {
+                    listHtml += `<li class="list-group-item">${index + 1}. ${product.title}</li>`;
+                });
+                $('#hot-products-list').html(listHtml);
+            },
+            error: function () {
+                alert("查询错误，请等待攻城狮修复！！");
+            }
+        });
+    }
+
+    // 查询近七日订单金额并绘制条状图
+    function showOrderAmountChart() {
+        $.ajax({
+            url: "/order/lastSevenDaysTotal",
+            type: "get",
+            dataType: "json",
+            success: function (res) {
+                // 提取日期和金额数据
+                let labels = res.data.map(item => item.order_date);
+                let data = res.data.map(item => item.total_amount);
+                // 定义颜色
+                let barColor = 'rgba(54, 162, 235, 0.7)';
+                let borderColor = 'rgba(54, 162, 235, 1)';
+
+                // 绘制条状图
+                let ctx = document.getElementById('orderAmountChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '订单成交金额 (元)',
+                            data: data,
+                            backgroundColor: barColor,
+                            borderColor: borderColor,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: '近七日订单成交金额',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '金额 (元)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: '日期'
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            error: function () {
+                alert("查询订单金额失败，请稍后重试！");
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit" />
+    <title>手机商城 - 优惠码管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 引入 Bootstrap 和相关文件 -->
+    <script src="../bootstrap3/js/holder.js"></script>
+    <link href="../bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <script src="../bootstrap3/jquery-1.8.3.min.js"></script>
+    <script src="../bootstrap3/js/bootstrap.js"></script>
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="../bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+    <!-- 自定义 CSS -->
+    <link rel="stylesheet" type="text/css" href="../css/layout.css" />
+    <link rel="stylesheet" type="text/css" href="../css/webindex.css" />
+    <link rel="stylesheet" type="text/css" href="../css/footer.css" />
+    <link rel="stylesheet" type="text/css" href="../css/top.css" />
+    <!-- 自定义样式 -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) no-repeat fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar .nav-pills > li > a {
+            border-radius: 8px;
+            margin-bottom: 5px;
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .sidebar .nav-pills > li > a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .sidebar .nav-pills > li.active > a {
+            background-color: #007bff;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .panel {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background-color: #fff;
+            margin-bottom: 30px;
+        }
+        .panel-heading {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+            padding: 15px;
+        }
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .panel-body {
+            padding: 20px;
+        }
+        .table {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+        .table td {
+            vertical-align: middle;
+        }
+        .table tr:hover {
+            background-color: #e9ecef;
+        }
+        .btn-add, .btn-edit, .btn-delete {
+            margin: 5px;
+        }
+        .btn-add {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-add:hover {
+            background: linear-gradient(to right, #0056b3, #009c8c);
+        }
+        .btn-edit {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+        .btn-edit:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-delete:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .modal-content {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+        }
+        .modal-title {
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #0056b3, #009c8c);
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-bottom: 20px;
+            }
+            .panel {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 头部开始 -->
+<div class="header"></div>
+<!-- 头部结束 -->
+
+<!-- 中间导航条开始 -->
+<div class="middleNavigation"></div>
+<!-- 中间导航条结束 -->
+
+<!-- 主体内容开始 -->
+<div class="container">
+    <div class="row">
+        <!-- 左侧导航栏 -->
+        <div class="col-md-2 sidebar">
+            <ul class="nav nav-pills nav-stacked">
+                <li><a href="admin.html">商品数据分析页</a></li>
+                <li><a href="admin_p.html">商品管理页</a></li>
+                <li><a href="admin_u.html">用户管理页</a></li>
+                <li><a href="admin_o.html">订单管理页</a></li>
+                <li><a href="admin_c.html">分类管理页</a></li>
+                <li class="active"><a href="admin_d.html">优惠码管理页</a></li>
+                <li><a href="admin_cmt.html">评论管理页</a></li>
+            </ul>
+        </div>
+        <!-- 右侧主内容 -->
+        <div class="col-md-10">
+            <div class="panel panel-default" style="margin-top: 20px;">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="panel-title">优惠码管理</p>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button class="btn btn-add" data-toggle="modal" data-target="#addDiscountModal">
+                                <i class="fa fa-plus"></i> 添加优惠码
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <!-- 优惠码表格 -->
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>优惠码</th>
+                            <th>数量</th>
+                            <th>到期时间</th>
+                            <th>模式</th>
+                            <th>详情</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="discountTableBody">
+                        <!-- 动态填充优惠码数据 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 主体内容结束 -->
+
+<!-- 添加优惠码模态框 -->
+<div class="modal fade" id="addDiscountModal" tabindex="-1" role="dialog" aria-labelledby="addDiscountModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="addDiscountModalLabel">添加优惠码</h4>
+            </div>
+            <div class="modal-body">
+                <form id="addDiscountForm">
+                    <div class="form-group">
+                        <label>优惠码名称</label>
+                        <input type="text" class="form-control" name="name" placeholder="如 YHM666">
+                    </div>
+                    <div class="form-group">
+                        <label>数量</label>
+                        <input type="number" class="form-control" name="quantity" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>到期时间</label>
+                        <input type="datetime-local" class="form-control" name="expiryDate">
+                    </div>
+                    <div class="form-group">
+                        <label>优惠模式</label>
+                        <select class="form-control" name="mode" onchange="toggleDiscountFields('add')">
+                            <option value="0">固定金额（如满100减30）</option>
+                            <option value="1">百分比（如80%）</option>
+                        </select>
+                    </div>
+                    <div id="addFixedDiscountFields">
+                        <div class="form-group">
+                            <label>最低金额（元）</label>
+                            <input type="number" class="form-control" name="minAmount" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>折扣金额（元）</label>
+                            <input type="number" class="form-control" name="discountAmount" min="0">
+                        </div>
+                    </div>
+                    <div id="addPercentageDiscountFields" style="display: none;">
+                        <div class="form-group">
+                            <label>折扣百分比（%）</label>
+                            <input type="number" class="form-control" name="discountPercentage" min="1" max="100">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="addDiscount()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑优惠码模态框 -->
+<div class="modal fade" id="editDiscountModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                <h4 class="modal-title">编辑优惠码</h4>
+            </div>
+            <div class="modal-body">
+                <form id="editDiscountForm">
+                    <input type="hidden" name="id">
+                    <div class="form-group">
+                        <label>优惠码名称</label>
+                        <input type="text" class="form-control" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label>数量</label>
+                        <input type="number" class="form-control" name="quantity" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>到期时间</label>
+                        <input type="datetime-local" class="form-control" name="expiryDate">
+                    </div>
+                    <div class="form-group">
+                        <label>优惠模式</label>
+                        <select class="form-control" name="mode" onchange="toggleDiscountFields('edit')">
+                            <option value="0">固定金额（如满100减30）</option>
+                            <option value="1">百分比（如80%）</option>
+                        </select>
+                    </div>
+                    <div id="editFixedDiscountFields">
+                        <div class="form-group">
+                            <label>最低金额（元）</label>
+                            <input type="number" class="form-control" name="minAmount" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>折扣金额（元）</label>
+                            <input type="number" class="form-control" name="discountAmount" min="0">
+                        </div>
+                    </div>
+                    <div id="editPercentageDiscountFields" style="display: none;">
+                        <div class="form-group">
+                            <label>折扣百分比（%）</label>
+                            <input type="number" class="form-control" name="discountPercentage" min="1" max="100">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="updateDiscount()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 页脚开始 -->
+<div class="footer"></div>
+<!-- 页脚结束 -->
+
+<script type="text/javascript">
+    $(function () {
+        loadDiscounts();
+    });
+
+    function loadDiscounts() {
+        $.ajax({
+            url: "/discount/list",
+            type: "get",
+            dataType: "json",
+            success: function (res) {
+                let discounts = res.data;
+                let tableHtml = '';
+                discounts.forEach(discount => {
+                    let modeText = discount.mode === 0 ? '固定金额' : '百分比';
+                    let detailText = discount.mode === 0 ? `满${discount.minAmount}减${discount.discountAmount}` : `${discount.discountPercentage}%`;
+                    tableHtml += `
+                        <tr>
+                            <td>${discount.id}</td>
+                            <td>${discount.name}</td>
+                            <td>${discount.quantity}</td>
+                            <td>${formatDate(discount.expiryDate)}</td>
+                            <td>${modeText}</td>
+                            <td>${detailText}</td>
+                            <td>
+                                <button class="btn btn-sm btn-edit" onclick="openEditModal(${discount.id})">编辑</button>
+                                <button class="btn btn-sm btn-delete" onclick="deleteDiscount(${discount.id})">删除</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                $('#discountTableBody').html(tableHtml);
+            },
+            error: function () {
+                alert("查询优惠码失败，请稍后重试！");
+            }
+        });
+    }
+
+    function toggleDiscountFields(prefix) {
+        let mode = $(`#${prefix}DiscountForm select[name='mode']`).val();
+        if (mode == '0') {
+            $(`#${prefix}FixedDiscountFields`).show();
+            $(`#${prefix}PercentageDiscountFields`).hide();
+        } else {
+            $(`#${prefix}FixedDiscountFields`).hide();
+            $(`#${prefix}PercentageDiscountFields`).show();
+        }
+    }
+
+    function addDiscount() {
+        let formData = $('#addDiscountForm').serializeArray();
+        let discount = {};
+        formData.forEach(item => {
+            discount[item.name] = item.value;
+        });
+        if (discount.mode == '0') {
+            discount.discountPercentage = 0;
+        } else {
+            discount.minAmount = 0;
+            discount.discountAmount = 0;
+        }
+        $.ajax({
+            url: "/discount/create",
+            type: "post",
+            contentType: "application/json",
+            data: JSON.stringify(discount),
+            dataType: "json",
+            success: function (res) {
+                if (res.status === 200) {
+                    alert("优惠码添加成功！");
+                    $('#addDiscountModal').modal('hide');
+                    $('#addDiscountForm')[0].reset();
+                    loadDiscounts();
+                }
+            },
+            error: function () {
+                alert("添加优惠码失败，请稍后重试！");
+            }
+        });
+    }
+
+    function openEditModal(id) {
+        $.ajax({
+            url: "/discount/query",
+            type: "get",
+            data: { id: id },
+            dataType: "json",
+            success: function (res) {
+                let discount = res.data;
+                let form = $('#editDiscountForm');
+                form.find('[name="id"]').val(discount.id);
+                form.find('[name="name"]').val(discount.name);
+                form.find('[name="quantity"]').val(discount.quantity);
+                form.find('[name="expiryDate"]').val(formatDateTimeLocal(discount.expiryDate));
+                form.find('[name="mode"]').val(discount.mode);
+                form.find('[name="minAmount"]').val(discount.minAmount);
+                form.find('[name="discountAmount"]').val(discount.discountAmount);
+                form.find('[name="discountPercentage"]').val(discount.discountPercentage);
+                toggleDiscountFields('edit');
+                $('#editDiscountModal').modal('show');
+            },
+            error: function () {
+                alert("获取优惠码信息失败！");
+            }
+        });
+    }
+
+    function updateDiscount() {
+        let formData = $('#editDiscountForm').serializeArray();
+        let discount = {};
+        formData.forEach(item => {
+            discount[item.name] = item.value;
+        });
+        if (discount.mode == '0') {
+            discount.discountPercentage = 0;
+        } else {
+            discount.minAmount = 0;
+            discount.discountAmount = 0;
+        }
+        $.ajax({
+            url: "/discount/update",
+            type: "post",
+            contentType: "application/json",
+            data: JSON.stringify(discount),
+            dataType: "json",
+            success: function (res) {
+                if (res.status === 200) {
+                    alert("优惠码更新成功！");
+                    $('#editDiscountModal').modal('hide');
+                    loadDiscounts();
+                }
+            },
+            error: function () {
+                alert("更新优惠码失败，请稍后重试！");
+            }
+        });
+    }
+
+    function deleteDiscount(id) {
+        if (confirm("确认删除优惠码 ID " + id + "？")) {
+            $.ajax({
+                url: "/discount/delete",
+                type: "post",
+                data: { id: id },
+                dataType: "json",
+                success: function (res) {
+                    if (res.status === 200) {
+                        alert("优惠码删除成功！");
+                        loadDiscounts();
+                    }
+                },
+                error: function () {
+                    alert("删除优惠码失败，请稍后重试！");
+                }
+            });
+        }
+    }
+
+    function formatDate(dateStr) {
+        let date = new Date(dateStr);
+        return date.toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+
+    function formatDateTimeLocal(dateStr) {
+        let date = new Date(dateStr);
+        return date.toISOString().slice(0, 16);
+    }
+</script>
+</html>

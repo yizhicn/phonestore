@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit" />
+    <title>手机商城 - 分类管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 引入 Bootstrap 和相关文件 -->
+    <script src="../bootstrap3/js/holder.js"></script>
+    <link href="../bootstrap3/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <script src="../bootstrap3/jquery-1.8.3.min.js"></script>
+    <script src="../bootstrap3/js/bootstrap.js"></script>
+    <!-- 字体图标 -->
+    <link rel="stylesheet" href="../bootstrap3/font-awesome-4.7.0/css/font-awesome.css" />
+    <!-- 自定义 CSS -->
+    <link rel="stylesheet" type="text/css" href="../css/layout.css" />
+    <link rel="stylesheet" type="text/css" href="../css/webindex.css" />
+    <link rel="stylesheet" type="text/css" href="../css/footer.css" />
+    <link rel="stylesheet" type="text/css" href="../css/top.css" />
+    <!-- 自定义样式 -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) no-repeat fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .sidebar .nav-pills > li > a {
+            border-radius: 8px;
+            margin-bottom: 5px;
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .sidebar .nav-pills > li > a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .sidebar .nav-pills > li.active > a {
+            background-color: #007bff;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .panel {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background-color: #fff;
+            margin-bottom: 30px;
+        }
+        .panel-heading {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+            padding: 15px;
+        }
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .panel-body {
+            padding: 20px;
+        }
+        .table > tbody > tr > td {
+            vertical-align: middle;
+        }
+        .status-active {
+            color: green;
+            font-weight: 500;
+        }
+        .status-deleted {
+            color: red;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #0056b3, #009c8c);
+        }
+        .btn-warning, .btn-danger {
+            transition: all 0.3s ease;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .modal-content {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            background: linear-gradient(to right, #007bff, #00c4b4);
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+        }
+        .modal-title {
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-bottom: 20px;
+            }
+            .panel {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- 头部开始 -->
+<div class="header"></div>
+<!-- 头部结束 -->
+
+<!-- 中间导航条开始 -->
+<div class="middleNavigation"></div>
+<!-- 中间导航条结束 -->
+
+<!-- 主体内容开始 -->
+<div class="container">
+    <div class="row">
+        <!-- 左侧导航栏 -->
+        <div class="col-md-2 sidebar">
+            <ul class="nav nav-pills nav-stacked">
+                <li><a href="admin.html">商品数据分析页</a></li>
+                <li><a href="admin_p.html">商品管理页</a></li>
+                <li><a href="admin_u.html">用户管理页</a></li>
+                <li><a href="admin_o.html">订单管理页</a></li>
+                <li class="active"><a href="admin_c.html">分类管理页</a></li>
+                <li><a href="admin_d.html">优惠码管理页</a></li>
+                <li><a href="admin_cmt.html">评论管理页</a></li>
+            </ul>
+        </div>
+        <!-- 右侧主内容 -->
+        <div class="col-md-10">
+            <div class="panel panel-default" style="margin-top: 20px;">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="panel-title">分类管理</p>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#addCategoryModal">
+                                <i class="fa fa-plus"></i> 新增分类
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>分类名称</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="category-list">
+                        <!-- 动态填充分类数据 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 主体内容结束 -->
+
+<!-- 新增分类模态框 -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="addCategoryModalLabel">新增分类</h4>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm">
+                    <div class="form-group">
+                        <label>分类名称</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <select class="form-control" name="status">
+                            <option value="1">正常</option>
+                            <option value="0">隐藏</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="saveCategoryBtn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑分类模态框 -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="editCategoryModalLabel">编辑分类</h4>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm">
+                    <input type="hidden" name="id">
+                    <div class="form-group">
+                        <label>分类名称</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <select class="form-control" name="status">
+                            <option value="1">正常</option>
+                            <option value="0">隐藏</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="updateCategoryBtn">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 页脚开始 -->
+<div class="footer"></div>
+<!-- 页脚结束 -->
+
+<script type="text/javascript">
+    $(function () {
+        // 加载分类列表
+        loadCategories();
+
+        // 保存新增分类
+        $('#saveCategoryBtn').click(function () {
+            let formData = {
+                name: $('#addCategoryForm input[name="name"]').val(),
+                status: parseInt($('#addCategoryForm select[name="status"]').val()) || 1
+            };
+            $.ajax({
+                url: '/category/add',
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status === 200) {
+                        alert('分类添加成功！');
+                        $('#addCategoryModal').modal('hide');
+                        $('#addCategoryForm')[0].reset();
+                        loadCategories();
+                    } else {
+                        alert('添加失败：' + (res.message || '未知错误'));
+                    }
+                },
+                error: function (xhr) {
+                    alert('请求错误：' + (xhr.responseText || '请检查网络'));
+                }
+            });
+        });
+
+        // 保存编辑分类
+        $('#updateCategoryBtn').click(function () {
+            let formData = {
+                id: parseInt($('#editCategoryForm input[name="id"]').val()),
+                name: $('#editCategoryForm input[name="name"]').val(),
+                status: parseInt($('#editCategoryForm select[name="status"]').val())
+            };
+            $.ajax({
+                url: '/category/update',
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status === 200) {
+                        alert('分类更新成功！');
+                        $('#editCategoryModal').modal('hide');
+                        loadCategories();
+                    } else {
+                        alert('更新失败：' + (res.message || '未知错误'));
+                    }
+                },
+                error: function (xhr) {
+                    alert('请求错误：' + (xhr.responseText || '请检查网络'));
+                }
+            });
+        });
+    });
+
+    // 加载所有分类
+    function loadCategories() {
+        $.ajax({
+            url: '/category/allCategories',
+            type: 'get',
+            dataType: 'json',
+            success: function (res) {
+                if (res.status !== 200) {
+                    alert('查询失败：' + (res.message || '未知错误'));
+                    return;
+                }
+                let categories = res.data || [];
+                let html = '';
+                categories.forEach(category => {
+                    let statusText = category.status === 1 ? '正常' : '隐藏';
+                    let statusClass = category.status === 1 ? 'status-active' : 'status-deleted';
+                    html += `
+                        <tr>
+                            <td>${category.id}</td>
+                            <td>${category.name}</td>
+                            <td class="${statusClass}">${statusText}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning edit-btn" data-category='${JSON.stringify(category)}'><i class="fa fa-edit"></i> 编辑</button>
+                                <button class="btn btn-sm btn-danger delete-btn" data-id="${category.id}"><i class="fa fa-trash"></i> 删除</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                $('#category-list').html(html);
+
+                // 绑定编辑按钮事件
+                $('.edit-btn').click(function () {
+                    let category = JSON.parse($(this).attr('data-category'));
+                    $('#editCategoryForm input[name="id"]').val(category.id);
+                    $('#editCategoryForm input[name="name"]').val(category.name);
+                    $('#editCategoryForm select[name="status"]').val(category.status);
+                    $('#editCategoryModal').modal('show');
+                });
+
+                // 绑定删除按钮事件
+                $('.delete-btn').click(function () {
+                    let id = $(this).data('id');
+                    if (confirm('确定要删除此分类吗？')) {
+                        $.ajax({
+                            url: '/category/delete',
+                            type: 'post',
+                            data: { id: id },
+                            dataType: 'json',
+                            success: function (res) {
+                                if (res.status === 200) {
+                                    alert('删除成功！');
+                                    loadCategories();
+                                } else {
+                                    alert('删除失败：' + (res.message || '未知错误'));
+                                }
+                            },
+                            error: function (xhr) {
+                                alert('请求错误：' + (xhr.responseText || '请检查网络'));
+                            }
+                        });
+                    }
+                });
+            },
+            error: function (xhr) {
+                alert('查询错误：' + (xhr.responseText || '请检查网络'));
+            }
+        });
+    }
+</script>
+</body>
+</html>

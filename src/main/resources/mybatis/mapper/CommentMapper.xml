@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="phonestore.mapper.CommentMapper">
+    <!-- 自定义结果集映射 -->
+    <resultMap id="queryComment" type="phonestore.entity.Comment">
+        <id property="id" column="id"/>
+        <result property="oid" column="oid"/>
+        <result property="pid" column="pid"/>
+        <result property="uid" column="uid"/>
+        <result property="content" column="content"/>
+        <result property="rating" column="rating"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="modifiedTime" column="modified_time"/>
+        <result property="createdUser" column="created_user"/>
+        <result property="modifiedUser" column="modified_user"/>
+    </resultMap>
+
+    <!-- 插入评价 -->
+    <insert id="insertComment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_comment (
+            oid, pid, uid, content, rating,
+            created_time, created_user, modified_time, modified_user
+        ) VALUES (
+                     #{oid}, #{pid}, #{uid}, #{content}, #{rating},
+                     #{createdTime}, #{createdUser}, #{modifiedTime}, #{modifiedUser}
+                 )
+    </insert>
+
+    <!-- 根据订单ID查询评价 -->
+    <select id="queryCommentsByOid" resultMap="queryComment">
+        SELECT id, oid, pid, uid, content, rating, created_time, created_user
+        FROM t_comment
+        WHERE oid = #{oid}
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据商品ID查询评价 -->
+    <select id="queryCommentsByPid" resultMap="queryComment">
+        SELECT id, oid, pid, uid, content, rating, created_time, created_user
+        FROM t_comment
+        WHERE pid = #{pid}
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 查询所有评论 -->
+    <select id="queryAllComments" resultMap="queryComment">
+        SELECT id, oid, pid, uid, content, rating, created_time, created_user
+        FROM t_comment
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 删除评论 -->
+    <delete id="deleteComment">
+        DELETE FROM t_comment WHERE id = #{id}
+    </delete>
+</mapper>

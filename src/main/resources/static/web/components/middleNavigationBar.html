@@ -1,0 +1,61 @@
+<div class="row top-nav">
+    <div class="col-md-4">
+        <ul class="nav nav-pills" id="category-nav">
+            <li>
+                <a href="#"></a>
+            </li>
+            <li class="active"><a><span class="fa fa-home"></span></a></li>
+            <li><a href="index.html">首页</a></li>
+            <!-- 动态分类将插入这里 -->
+        </ul>
+    </div>
+    <div class="col-md-8">
+        <form id="searchForm"
+              onsubmit="return checkIfHaveVal()"
+              action="/web/search.html"
+              class="form-inline pull-right"
+              role="form">
+            <div class="form-group">
+                <input type="text" class="form-control" id="search" name="title" placeholder="请输入商品名称进行搜索">
+                <input type="hidden" id="pageNum" name="pageNum" value="1">
+                <input type="hidden" id="pageSize" name="pageSize" value="12">
+            </div>
+            <button id="toSearch" type="submit" class="btn btn-default btn-sm"><span class="fa fa-search"></span></button>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        // 加载分类
+        $.ajax({
+            url: '/category/list',
+            type: 'get',
+            dataType: 'json',
+            success: function (res) {
+                if (res.status !== 200) {
+                    console.error('加载分类失败：' + (res.message || '未知错误'));
+                    return;
+                }
+                let categories = res.data || [];
+                let html = '';
+                categories.forEach(category => {
+                    html += `<li><a href="/web/category.html?categoryId=${category.id}">${category.name}</a></li>`;
+                });
+                $('#category-nav').append(html);
+            },
+            error: function (xhr) {
+                console.error('请求错误：' + (xhr.responseText || '请检查网络'));
+            }
+        });
+    });
+
+    function checkIfHaveVal() {
+        let val = $("#search").val();
+        if (val === '') {
+            alert("请先输入搜索内容！");
+            return false;
+        }
+        return true;
+    }
+</script>
+<script src="../bootstrap3/jquery-1.8.3.min.js"></script>
