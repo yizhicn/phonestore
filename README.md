@@ -26,4 +26,3 @@
 
   **建议使用PC端进行访问**
 
-论文相关介绍:https://blog.shying.top/index.php/2025/04/30/%e6%89%8b%e6%9c%ba%e5%95%86%e5%9f%8e%e7%b3%bb%e7%bb%9f%e7%9a%84%e8%ae%be%e8%ae%a1%e4%b8%8e%e5%ae%9e%e7%8e%b0/
